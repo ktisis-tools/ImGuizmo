@@ -259,8 +259,8 @@ namespace IMGUIZMO_NAMESPACE
 
 		void TransformVector(const matrix_t& matrix);
 		void TransformPoint(const matrix_t& matrix);
-		void TransformVector(const vec_t& v, const matrix_t& matrix) { (*this) = v; this->TransformVector(matrix); }
-		void TransformPoint(const vec_t& v, const matrix_t& matrix) { (*this) = v; this->TransformPoint(matrix); }
+		void TransformVector(const vec_t& v, const matrix_t& matrix) { (*this) = v.PTransformVector(matrix); }
+		void TransformPoint(const vec_t& v, const matrix_t& matrix) { (*this) = v.PTransformPoint(matrix); }
 
 		/* Pure versions of the above functions */
 		vec_t PTransform(const matrix_t& matrix) const;
@@ -411,17 +411,7 @@ namespace IMGUIZMO_NAMESPACE
 
 	void vec_t::Transform(const matrix_t& matrix)
 	{
-		vec_t out;
-
-		out.x = x * matrix.m[0][0] + y * matrix.m[1][0] + z * matrix.m[2][0] + w * matrix.m[3][0];
-		out.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1] + w * matrix.m[3][1];
-		out.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2] + w * matrix.m[3][2];
-		out.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3] + w * matrix.m[3][3];
-
-		x = out.x;
-		y = out.y;
-		z = out.z;
-		w = out.w;
+		*this = this->PTransform(matrix);
 	}
 
 	vec_t vec_t::PTransform(const matrix_t& matrix) const
@@ -436,22 +426,12 @@ namespace IMGUIZMO_NAMESPACE
 
 	void vec_t::Transform(const vec_t& s, const matrix_t& matrix)
 	{
-		*this = s;
-		Transform(matrix);
+		*this = s.PTransform(matrix);
 	}
 
 	void vec_t::TransformPoint(const matrix_t& matrix)
 	{
-		vec_t out;
-
-		out.x = x * matrix.m[0][0] + y * matrix.m[1][0] + z * matrix.m[2][0] + matrix.m[3][0];
-		out.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1] + matrix.m[3][1];
-		out.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2] + matrix.m[3][2];
-		out.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3] + matrix.m[3][3];
-		x = out.x;
-		y = out.y;
-		z = out.z;
-		w = out.w;
+		*this = this->PTransformPoint(matrix);
 	}
 
 	vec_t vec_t::PTransformPoint(const matrix_t& matrix) const
@@ -466,17 +446,7 @@ namespace IMGUIZMO_NAMESPACE
 
 	void vec_t::TransformVector(const matrix_t& matrix)
 	{
-		vec_t out;
-
-		out.x = x * matrix.m[0][0] + y * matrix.m[1][0] + z * matrix.m[2][0];
-		out.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1];
-		out.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2];
-		out.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3];
-
-		x = out.x;
-		y = out.y;
-		z = out.z;
-		w = out.w;
+		*this = this->PTransformVector(matrix);
 	}
 
 	vec_t vec_t::PTransformVector(const matrix_t& matrix) const
