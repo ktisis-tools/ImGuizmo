@@ -272,8 +272,8 @@ namespace IMGUIZMO_NAMESPACE
 		bool operator!=(const vec_t& other) const { return memcmp(this, &other, sizeof(vec_t)) != 0; }
 	};
 
-	vec_t makeVect(float _x, float _y, float _z = 0.f, float _w = 0.f) { vec_t res; res.x = _x; res.y = _y; res.z = _z; res.w = _w; return res; }
-	vec_t makeVect(ImVec2 v) { vec_t res; res.x = v.x; res.y = v.y; res.z = 0.f; res.w = 0.f; return res; }
+	vec_t makeVect(float _x, float _y, float _z = 0.f, float _w = 0.f) { return { .x = _x, .y = _y, .z = _z, .w = _w }; }
+	vec_t makeVect(ImVec2 v) { return { .x = v.x, .y = v.y, .z = 0.f, .w = 0.f }; }
 	vec_t vec_t::operator * (float f) const { return makeVect(x * f, y * f, z * f, w * f); }
 	vec_t vec_t::operator - () const { return makeVect(-x, -y, -z, -w); }
 	vec_t vec_t::operator - (const vec_t& v) const { return makeVect(x - v.x, y - v.y, z - v.z, w - v.w); }
