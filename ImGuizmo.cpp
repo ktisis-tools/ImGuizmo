@@ -262,6 +262,11 @@ namespace IMGUIZMO_NAMESPACE
 		void TransformVector(const vec_t& v, const matrix_t& matrix) { (*this) = v; this->TransformVector(matrix); }
 		void TransformPoint(const vec_t& v, const matrix_t& matrix) { (*this) = v; this->TransformPoint(matrix); }
 
+		/* Pure versions of the above functions */
+		vec_t PTransform(const matrix_t& matrix) const;
+		vec_t PTransformVector(const matrix_t& matrix) const;
+		vec_t PTransformPoint(const matrix_t& matrix) const;
+
 		float& operator [] (size_t index) { return ((float*)&x)[index]; }
 		const float& operator [] (size_t index) const { return ((float*)&x)[index]; }
 		bool operator!=(const vec_t& other) const { return memcmp(this, &other, sizeof(vec_t)) != 0; }
@@ -419,6 +424,16 @@ namespace IMGUIZMO_NAMESPACE
 		w = out.w;
 	}
 
+	vec_t vec_t::PTransform(const matrix_t& matrix) const
+	{
+		return {
+			.x = x * matrix.m[0][0] + y * matrix.m[1][0] + z * matrix.m[2][0] + matrix.m[3][0],
+			.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1] + matrix.m[3][1],
+			.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2] + matrix.m[3][2],
+			.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3] + matrix.m[3][3]
+		};
+	}
+
 	void vec_t::Transform(const vec_t& s, const matrix_t& matrix)
 	{
 		*this = s;
@@ -433,11 +448,20 @@ namespace IMGUIZMO_NAMESPACE
 		out.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1] + matrix.m[3][1];
 		out.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2] + matrix.m[3][2];
 		out.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3] + matrix.m[3][3];
-
 		x = out.x;
 		y = out.y;
 		z = out.z;
 		w = out.w;
+	}
+
+	vec_t vec_t::PTransformPoint(const matrix_t& matrix) const
+	{
+		return {
+			.x = x * matrix.m[0][0] + y * matrix.m[1][0] + z * matrix.m[2][0] + matrix.m[3][0],
+			.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1] + matrix.m[3][1],
+			.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2] + matrix.m[3][2],
+			.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3] + matrix.m[3][3]
+		};
 	}
 
 	void vec_t::TransformVector(const matrix_t& matrix)
@@ -453,6 +477,16 @@ namespace IMGUIZMO_NAMESPACE
 		y = out.y;
 		z = out.z;
 		w = out.w;
+	}
+
+	vec_t vec_t::PTransformVector(const matrix_t& matrix) const
+	{
+		return {
+			.x = x * matrix.m[0][0] + y * matrix.m[1][0] + z * matrix.m[2][0],
+			.y = x * matrix.m[0][1] + y * matrix.m[1][1] + z * matrix.m[2][1],
+			.z = x * matrix.m[0][2] + y * matrix.m[1][2] + z * matrix.m[2][2],
+			.w = x * matrix.m[0][3] + y * matrix.m[1][3] + z * matrix.m[2][3]
+		};
 	}
 
 	float matrix_t::Inverse(const matrix_t& srcMatrix, bool affine)
