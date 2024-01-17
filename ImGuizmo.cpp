@@ -1251,6 +1251,8 @@ namespace IMGUIZMO_NAMESPACE
 
       gContext.mRadiusSquareCenter = screenRotateSize * gContext.mHeight;
 
+      const bool usingThis = gContext.mbUsing && gContext.mActualID == gContext.mEditingID;
+
       bool hasRSC = Intersects(op, ROTATE_SCREEN);
       for (int axis = 0; axis < 3; axis++)
       {
@@ -1258,7 +1260,8 @@ namespace IMGUIZMO_NAMESPACE
          {
             continue;
          }
-         const bool usingAxis = (gContext.mbUsing && type == MT_ROTATE_Z - axis);
+
+         const bool usingAxis = (usingThis && type == MT_ROTATE_Z - axis);
          const int circleMul = (hasRSC && !usingAxis ) ? 1 : 2;
 
          ImVec2* circlePos = (ImVec2*)alloca(sizeof(ImVec2) * (circleMul * halfCircleSegmentCount + 1));
@@ -1272,7 +1275,7 @@ namespace IMGUIZMO_NAMESPACE
             vec_t pos = makeVect(axisPos[axis], axisPos[(axis + 1) % 3], axisPos[(axis + 2) % 3]) * gContext.mScreenFactor * rotationDisplayFactor;
             circlePos[i] = worldToPos(pos, gContext.mMVP);
          }
-         if (!gContext.mbUsing || usingAxis)
+         if (!usingThis || usingAxis)
          {
             drawList->AddPolyline(circlePos, circleMul* halfCircleSegmentCount + 1, colors[3 - axis], false, gContext.mStyle.RotationLineThickness);
          }
@@ -1283,7 +1286,7 @@ namespace IMGUIZMO_NAMESPACE
             gContext.mRadiusSquareCenter = radiusAxis;
          }
       }
-      if(hasRSC && (!gContext.mbUsing || type == MT_ROTATE_SCREEN))
+      if(hasRSC && (!usingThis || type == MT_ROTATE_SCREEN))
       {
          drawList->AddCircle(worldToPos(gContext.mModel.v.position, gContext.mViewProjection), gContext.mRadiusSquareCenter, colors[0], 64, gContext.mStyle.RotationOuterLineThickness);
       }
@@ -1966,13 +1969,6 @@ namespace IMGUIZMO_NAMESPACE
       ImGuiIO& io = ImGui::GetIO();
       int type = MT_NONE;
 
-      vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y, 0.f, 0.f };
-      float dist = deltaScreen.Length();
-      if (Intersects(op, ROTATE_SCREEN) && dist >= (gContext.mRadiusSquareCenter - 4.0f) && dist < (gContext.mRadiusSquareCenter + 4.0f))
-      {
-         type = MT_ROTATE_SCREEN;
-      }
-
       const vec_t planNormals[] = { gContext.mModel.v.right, gContext.mModel.v.up, gContext.mModel.v.dir };
 
       vec_t modelViewPos;
@@ -2009,6 +2005,22 @@ namespace IMGUIZMO_NAMESPACE
          if (distance < 8.f) // pixel size
          {
             type = MT_ROTATE_X + i;
+         }
+
+         float radiusAxis = sqrtf((ImLengthSqr(worldToPos(gContext.mModel.v.position, gContext.mViewProjection) - idealPosOnCircleScreen)));
+         if (radiusAxis > gContext.mRadiusSquareCenter)
+         {
+            gContext.mRadiusSquareCenter = radiusAxis;
+         }
+      }
+
+      if (type == MT_NONE)
+      {
+         vec_t deltaScreen = { io.MousePos.x - gContext.mScreenSquareCenter.x, io.MousePos.y - gContext.mScreenSquareCenter.y, 0.f, 0.f };
+         float dist = deltaScreen.Length();
+         if (Intersects(op, ROTATE_SCREEN) && dist >= (gContext.mRadiusSquareCenter - 4.0f) && dist < (gContext.mRadiusSquareCenter + 4.0f))
+         {
+            type = MT_ROTATE_SCREEN;
          }
       }
 
