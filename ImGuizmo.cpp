@@ -787,6 +787,11 @@ namespace IMGUIZMO_NAMESPACE
       return gContext.mStyle;
    }
 
+   int GetCurrentOperation()
+   {
+      return gContext.mCurrentOperation;
+   }
+
    static ImU32 GetColorU32(int idx)
    {
       IM_ASSERT(idx < COLOR::COUNT);
